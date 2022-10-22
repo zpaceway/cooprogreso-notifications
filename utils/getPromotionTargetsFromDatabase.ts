@@ -13,30 +13,34 @@ const getPromotionTargetsFromDatabase = async (database: string) => {
   const databasePath = `${__dirname}/../databases/${database}`;
   const rows = await readXlsxFile(databasePath);
   const promotionTargets: PromotionTarget[] = await Promise.all(
-    rows.slice(2).map(async (row) => {
-      const possibleName = cleanCell(row[3]);
-      const identificationNumber = cleanCell(row[2]);
-      const name =
-        possibleName === errorCode
-          ? await getNameFromSriApi(identificationNumber)
-          : cleanCell(row[3]);
-      const amountString = cleanCell(row[7]);
+    rows
+      .slice(2)
+      .filter((row) => row[8] === "AVALDEZ")
+      .map(async (row) => {
+        const possibleName = cleanCell(row[3]);
+        const identificationNumber = cleanCell(row[2]);
+        const name =
+          possibleName === errorCode
+            ? await getNameFromSriApi(identificationNumber)
+            : cleanCell(row[3]);
+        const amountString = cleanCell(row[7]);
 
-      return {
-        name,
-        identificationNumber,
-        amount: parseInt(amountString),
-        internationalPhoneNumbers: [
-          ...new Set(
-            row
-              .slice(14)
-              .filter((cell) => !!cell)
-              .map((cell) => cleanCell(cell))
-              .map((number) => `593${parseInt(number)}`)
-          ),
-        ],
-      };
-    })
+        return {
+          name,
+          identificationNumber,
+          amount: parseInt(amountString),
+          internationalPhoneNumbers: [
+            ...new Set(
+              row
+                .slice(14)
+                .filter((cell) => !!cell)
+                .map((cell) => cleanCell(cell))
+                .map((number) => `593${parseInt(number)}`)
+                .filter((number) => number.length === 12)
+            ),
+          ],
+        };
+      })
   );
   return promotionTargets;
 };

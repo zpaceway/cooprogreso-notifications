@@ -28,6 +28,7 @@ console.log({ DEBUG, DEBUG_PHONE_NUMBER, TEMPLATE_NAME, DATABASE_NAME });
 
   console.log(`Promotion targets loaded...`);
   console.log({ total: promotionTargets.length });
+  console.log("First target is:", promotionTargets[0]);
 
   ///////////////////////// START OF HANDLER ////////////////////////////////
 
@@ -40,7 +41,12 @@ console.log({ DEBUG, DEBUG_PHONE_NUMBER, TEMPLATE_NAME, DATABASE_NAME });
           DEBUG ? DEBUG_PHONE_NUMBER : phoneNumber
         );
         await client.sendMessage(chatId, notificationTemplate(promotionTarget));
-        console.log("Promotion sent to:", promotionTarget);
+        console.log(
+          "Promotion sent to:",
+          promotionTarget,
+          "with phone number:",
+          phoneNumber
+        );
         await sleep(2000);
       }
     }
